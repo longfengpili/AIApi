@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-12 10:38:34
+# @Last Modified time: 2023-09-12 11:15:23
 # @github: https://github.com/longfengpili
 
 
@@ -12,7 +12,7 @@ import websocket
 
 import _thread as thread
 
-from messages import Message, Messages
+from .contents import Content, Contents
 
 
 class WsApp:
@@ -20,6 +20,7 @@ class WsApp:
     def __init__(self, wsurl: str):
         self.wsurl = wsurl
         self.domain = 'generalv2'
+        self.answer = ''
 
     @property
     def app(self):
@@ -80,11 +81,15 @@ class WsApp:
             status = choices["status"]
             content = choices["text"][0]["content"]
             print(content, end='')
-            global answer
-            answer += content
-            # print(1)
+            self.answer += content
             if status == 2:
                 ws.close()
+
+    def save_data(self, question: str, answer: str):
+        question = Content('user', question)
+        answer = Content('assistant', answer)
+        contents = Contents(question, answer)
+        contents.dump('test.csv')
 
     def main(self, appid: str, question: list):
         websocket.enableTrace(False)
@@ -92,3 +97,4 @@ class WsApp:
         ws.appid = appid
         ws.question = question
         ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
+        self.save_data(question, self.answer)

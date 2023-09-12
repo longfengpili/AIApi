@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-11 14:48:03
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-12 10:53:23
+# @Last Modified time: 2023-09-12 11:16:45
 # @github: https://github.com/longfengpili
 
 
@@ -26,7 +26,7 @@ class Content:
             'content': self.content,
             'kwargs': self.kwargs
         }
-        data = json.dumps(data)
+        data = json.dumps(data, ensure_ascii=False)
         return data
 
     @classmethod
