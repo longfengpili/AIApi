@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-11 13:34:13
+# @Last Modified time: 2023-09-12 10:38:34
 # @github: https://github.com/longfengpili
 
 
@@ -11,6 +11,8 @@ import ssl
 import websocket
 
 import _thread as thread
+
+from messages import Message, Messages
 
 
 class WsApp:
