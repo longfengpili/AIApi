@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:23:57
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-08 14:51:06
+# @Last Modified time: 2023-09-18 11:07:27
 # @github: https://github.com/longfengpili
 
 import hmac
@@ -17,7 +17,7 @@ from urllib.parse import urlparse
 from urllib.parse import urlencode
 
 
-class WsParam:
+class XingHuoAuth:
 
     def __init__(self, apikey: str, apisecret: str, sparkurl: str):
         self.apikey = apikey
@@ -26,7 +26,8 @@ class WsParam:
         self.path = urlparse(sparkurl).path
         self.sparkurl = sparkurl
 
-    def create_url(self):
+    @property
+    def auth_url(self):
         # 生成RFC1123格式的时间戳
         now = datetime.now()
         date = format_date_time(mktime(now.timetuple()))

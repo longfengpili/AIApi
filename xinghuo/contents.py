@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-11 14:48:03
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-12 11:16:45
+# @Last Modified time: 2023-09-18 12:25:07
 # @github: https://github.com/longfengpili
 
 
@@ -17,7 +17,7 @@ class Content:
         self.kwargs = kwargs
 
     def __repr__(self):
-        return f"[{self.role}]{self.content}"
+        return f"[{self.role}]{self.content[:20]}..."
 
     @property
     def data(self):
@@ -27,6 +27,14 @@ class Content:
             'kwargs': self.kwargs
         }
         data = json.dumps(data, ensure_ascii=False)
+        return data
+
+    @property
+    def chatdata(self):
+        data = {
+            'role': self.role,
+            'content': self.content
+        }
         return data
 
     @classmethod
@@ -42,18 +50,26 @@ class Contents:
         self.contents = contents
 
     def __repr__(self):
-        return f"{self.contents}"
+        contents = [f"[{content.role}]{content.content[:20]}..." for content in self.contents]
+        contents = '\n'.join(contents)
+        return contents
 
     def append(self, content: Content):
         contents = list(self.contents)
         contents.append(content)
-        return Contents(*contents)
+        self.contents = contents
+        return self
 
     @property
     def data(self):
         contents = [content.data for content in self.contents]
         data = '\n'.join(contents) + '\n'
         return data
+
+    @property
+    def chatdata(self):
+        contents = [content.chatdata for content in self.contents]
+        return contents
 
     def dump(self, filename: str):
         with open(filename, 'a', encoding='utf-8') as f:

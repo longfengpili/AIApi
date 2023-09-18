@@ -2,12 +2,12 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:44:15
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-12 11:15:08
+# @Last Modified time: 2023-09-18 12:19:13
 # @github: https://github.com/longfengpili
 
 from conf import APPID, APIKEY, APISECRET
-from xinghuo.ws_param import WsParam
-from xinghuo.ws_app import WsApp
+from xinghuo.chat import XinghuoChat
+from xinghuo.contents import Content, Contents
 
 
 if __name__ == "__main__":
@@ -15,9 +15,12 @@ if __name__ == "__main__":
     apikey = APIKEY
     apisecret = APISECRET
     sparkurl = 'wss://spark-api.xf-yun.com/v2.1/chat'
-    wsparam = WsParam(apikey, apisecret, sparkurl)
-    wsurl = wsparam.create_url()
 
-    question = [{'role': 'user', 'content': '介绍下pandas'}]
-    wsapp = WsApp(wsurl)
-    wsapp.main(appid, question)
+    content1 = Content(**{'role': 'user', 'content': '介绍下pandas'})
+    contents = Contents(content1)
+    print(contents)
+
+    xhchat = XinghuoChat(appid, apikey, apisecret, sparkurl)
+    # xhchat.chat(contents)
+    xhchat.chat_stream()
+    
