@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-19 11:39:51
+# @Last Modified time: 2023-09-19 12:06:51
 # @github: https://github.com/longfengpili
 
 
@@ -12,16 +12,28 @@ import websocket
 from .auth import XingHuoAuth
 from .contents import Content, Contents
 
+XINGHUOAPI = {
+    'api_v1': {
+        'url': 'wss://spark-api.xf-yun.com/v1.1/chat',
+        'domain': 'general'
+    },
+    'api_v2': {
+        'url': 'wss://spark-api.xf-yun.com/v2.1/chat',
+        'domain': 'generalv2'
+    }
+}
+
 
 class XinghuoChat(XingHuoAuth):
 
-    def __init__(self, appid: str, apikey: str, apisecret: str, sparkurl: str):
+    def __init__(self, appid: str, apikey: str, apisecret: str, apiver: str = 'v2'):
         self.appid = appid
-        self.domain = 'generalv2'
+        self.domain = XINGHUOAPI.get(f"api_{apiver}").get('domain')
+        self.sparkurl = XINGHUOAPI.get(f"api_{apiver}").get('url')
         self.sid = ''
         self.answer = ''
         self.contents = Contents()
-        super(XinghuoChat, self).__init__(apikey, apisecret, sparkurl)
+        super(XinghuoChat, self).__init__(apikey, apisecret, self.sparkurl)
 
     @property
     def connection(self):
