@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-19 10:23:07
+# @Last Modified time: 2023-09-19 11:38:38
 # @github: https://github.com/longfengpili
 
 
@@ -54,6 +54,7 @@ class XinghuoChat(XingHuoAuth):
 
     def parse_response(self, response: str):
         # print(response)
+        usage = {}
         data = json.loads(response)
         code = data['header']['code']
         sid = data['header']['sid']
@@ -72,40 +73,45 @@ class XinghuoChat(XingHuoAuth):
         print(content, end='')
         self.answer += content
         if status == 2:
-            # usage = data['payload']['usage']
-            # print(usage)
-            self.connection.close()
-        return sid, status
+            usage = data['payload']['usage']['text']
+            # self.connection.close()
 
-    def chat(self, contents: Contents, uid: str = '123'):
+        return sid, status, usage
+
+    def chat(self, contents: Contents, uid: str = '123', issave: bool = True, savefile: str = 'test.csv'):
+        print(contents)
+        print("\n>>>>>>Answer:")
+
         connection = self.connection
         message = self.build_message(contents)
         connection.send(message)
-        
         while response := connection.recv():
-            sid, status = self.parse_response(response)
-            # response = connection.recv()
+            sid, status, usage = self.parse_response(response)
 
-        answer = Content('assistant', self.answer, sid=sid)
+        answer = Content('assistant', self.answer, sid=sid, **usage)
         contents.append(answer)
+        
+        if issave:
+            contents.dump(savefile)
+
         return sid, contents
 
-    def chat_stream(self):
-        contents = Contents()
+    def chat_stream(self, contents: Contents = None, savefile: str = 'test.csv'):
+        if not contents:
+            contents = Contents()
+
         while True:
+            if contents.last_role == 'user':
+                sid, contents = self.chat(contents, issave=False)
+
             query = input("\n\n>>>>>>Ask: ")
             if not query:
                 continue
             if query == 'exit':
+                contents.dump(savefile)
                 break
 
             question = Content('user', query)
             contents.append(question)
-            print(contents)
-            sid, contents = self.chat(contents)
-            print(sid)
-
-    def save_data(self, contents: Contents, answer: str):
-        answer = Content('assistant', answer)
-        contents.append(answer)
-        contents.dump('test.csv')
+            
+        

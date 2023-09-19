@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-11 14:48:03
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-18 14:48:29
+# @Last Modified time: 2023-09-19 11:14:19
 # @github: https://github.com/longfengpili
 
 
@@ -17,9 +17,15 @@ class Content:
         self.kwargs = kwargs
 
     def __repr__(self):
-        print(self.kwargs)
+        return self._repr
+
+    def __getattr__(self, name: str):
+        return self.kwargs.get(name)
+
+    @property
+    def _repr(self):
         content = self.content.split('\n')[0]
-        sid = self.kwargs.get('sid')
+        sid = self.sid
         _repr = f"[{self.role}]{content[:20]}..."
         _repr = f"{_repr}({sid})" if sid else _repr
         return _repr
@@ -55,7 +61,7 @@ class Contents:
         self.contents = contents
 
     def __repr__(self):
-        contents = [f"[{content.role}]{content.content[:20]}..." for content in self.contents]
+        contents = [content._repr for content in self.contents]
         divider_line = '=' * 50
         contents = [divider_line, *contents, divider_line]
         contents = '\n'.join(contents)
@@ -66,6 +72,12 @@ class Contents:
         contents.append(content)
         self.contents = contents
         return self
+
+    @property
+    def last_role(self):
+        last_content = self.contents[-1]
+        last_role = last_content.role
+        return last_role
 
     @property
     def data(self):
