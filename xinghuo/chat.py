@@ -2,12 +2,11 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-19 11:38:38
+# @Last Modified time: 2023-09-19 11:39:51
 # @github: https://github.com/longfengpili
 
 
 import json
-import ssl
 import websocket
 
 from .auth import XingHuoAuth
