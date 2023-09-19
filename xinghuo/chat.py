@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-18 12:30:32
+# @Last Modified time: 2023-09-19 10:23:07
 # @github: https://github.com/longfengpili
 
 
@@ -39,7 +39,7 @@ class XinghuoChat(XingHuoAuth):
             "parameter": {
                 "chat": {
                     "domain": self.domain,
-                    "random_threshold": 0.5,
+                    "temperature": 0.5,
                     "max_tokens": 2048,
                     "auditing": "default"
                 }
@@ -57,46 +57,53 @@ class XinghuoChat(XingHuoAuth):
         data = json.loads(response)
         code = data['header']['code']
         sid = data['header']['sid']
+
+        if code != 0:
+            self.connection.close()
+            raise ValueError(f'请求错误: {code}, {data}')
+
         if sid != self.sid:
             self.sid = sid
             self.answer = ''
 
-        if code != 0:
-            print(f'请求错误: {code}, {data}')
+        choices = data['payload']['choices']
+        status = choices['status']
+        content = choices['text'][0]['content']
+        print(content, end='')
+        self.answer += content
+        if status == 2:
+            # usage = data['payload']['usage']
+            # print(usage)
             self.connection.close()
-        else:
-            choices = data["payload"]["choices"]
-            status = choices["status"]
-            content = choices["text"][0]["content"]
-            print(content, end='')
-            self.answer += content
-            if status == 2:
-                self.connection.close()
+        return sid, status
 
     def chat(self, contents: Contents, uid: str = '123'):
         connection = self.connection
         message = self.build_message(contents)
         connection.send(message)
-        response = connection.recv()
-        while response:
-            self.parse_response(response)
-            response = connection.recv()
+        
+        while response := connection.recv():
+            sid, status = self.parse_response(response)
+            # response = connection.recv()
 
-        answer = Content('assistant', self.answer)
+        answer = Content('assistant', self.answer, sid=sid)
         contents.append(answer)
-        return contents
+        return sid, contents
 
     def chat_stream(self):
         contents = Contents()
         while True:
-            query = input("\n\nAsk: ")
+            query = input("\n\n>>>>>>Ask: ")
+            if not query:
+                continue
             if query == 'exit':
                 break
 
             question = Content('user', query)
             contents.append(question)
             print(contents)
-            contents = self.chat(contents)
+            sid, contents = self.chat(contents)
+            print(sid)
 
     def save_data(self, contents: Contents, answer: str):
         answer = Content('assistant', answer)
