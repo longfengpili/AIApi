@@ -2,12 +2,13 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-19 12:06:51
+# @Last Modified time: 2023-09-20 13:58:10
 # @github: https://github.com/longfengpili
 
 
 import json
-import websocket
+from websockets.sync.client import connect
+from websockets import ConnectionClosedOK
 
 from .auth import XingHuoAuth
 from .contents import Content, Contents
@@ -36,9 +37,9 @@ class XinghuoChat(XingHuoAuth):
         super(XinghuoChat, self).__init__(apikey, apisecret, self.sparkurl)
 
     @property
-    def connection(self):
-        connection = websocket.create_connection(self.auth_url)
-        return connection
+    def websocket(self):
+        websocket = connect(self.auth_url)
+        return websocket
 
     def build_message(self, contents: Contents, uid: str = '123'):
         contents = contents.chatdata
@@ -71,7 +72,7 @@ class XinghuoChat(XingHuoAuth):
         sid = data['header']['sid']
 
         if code != 0:
-            self.connection.close()
+            self.websocket.close()
             raise ValueError(f'请求错误: {code}, {data}')
 
         if sid != self.sid:
@@ -81,24 +82,31 @@ class XinghuoChat(XingHuoAuth):
         choices = data['payload']['choices']
         status = choices['status']
         content = choices['text'][0]['content']
-        print(content, end='')
         self.answer += content
+
+        end = '\n' if status == 2 else ''
+        print(content, end=end)
         if status == 2:
             usage = data['payload']['usage']['text']
-            # self.connection.close()
 
-        return sid, status, usage
+        return sid, usage
 
     def chat(self, contents: Contents, uid: str = '123', issave: bool = True, savefile: str = 'test.csv'):
         print(contents)
         print("\n>>>>>>Answer:")
 
-        connection = self.connection
+        websocket = self.websocket
         message = self.build_message(contents)
-        connection.send(message)
-        while response := connection.recv():
-            sid, status, usage = self.parse_response(response)
+        websocket.send(message)
 
+        while True:
+            try:
+                response = websocket.recv()
+                sid, usage = self.parse_response(response)
+            except ConnectionClosedOK:
+                print(sid, usage)
+                break
+            
         answer = Content('assistant', self.answer, sid=sid, **usage)
         contents.append(answer)
         
@@ -115,7 +123,7 @@ class XinghuoChat(XingHuoAuth):
             if contents.last_role == 'user':
                 sid, contents = self.chat(contents, issave=False)
 
-            query = input("\n\n>>>>>>Ask: ")
+            query = input("\n>>>>>>Ask: ")
             if not query:
                 continue
             if query == 'exit':
