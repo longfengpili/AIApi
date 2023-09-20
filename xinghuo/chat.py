@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-20 13:58:10
+# @Last Modified time: 2023-09-20 14:10:49
 # @github: https://github.com/longfengpili
 
 
@@ -91,7 +91,7 @@ class XinghuoChat(XingHuoAuth):
 
         return sid, usage
 
-    def chat(self, contents: Contents, uid: str = '123', issave: bool = True, savefile: str = 'test.csv'):
+    def chat(self, contents: Contents, uid: str = '123'):
         print(contents)
         print("\n>>>>>>Answer:")
 
@@ -104,33 +104,30 @@ class XinghuoChat(XingHuoAuth):
                 response = websocket.recv()
                 sid, usage = self.parse_response(response)
             except ConnectionClosedOK:
-                print(sid, usage)
+                # print(sid, usage)
                 break
             
         answer = Content('assistant', self.answer, sid=sid, **usage)
         contents.append(answer)
-        
-        if issave:
-            contents.dump(savefile)
 
         return sid, contents
 
-    def chat_stream(self, contents: Contents = None, savefile: str = 'test.csv'):
+    def chat_stream(self, contents: Contents = None, uid: str = '123'):
         if not contents:
             contents = Contents()
 
         while True:
             if contents.last_role == 'user':
-                sid, contents = self.chat(contents, issave=False)
+                sid, contents = self.chat(contents, uid=uid)
 
             query = input("\n>>>>>>Ask: ")
             if not query:
                 continue
             if query == 'exit':
-                contents.dump(savefile)
                 break
 
             question = Content('user', query)
             contents.append(question)
             
+        return contents
         

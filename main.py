@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:44:15
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-19 12:06:33
+# @Last Modified time: 2023-09-20 14:01:56
 # @github: https://github.com/longfengpili
 
 from conf import APPID, APIKEY, APISECRET
@@ -21,4 +21,3 @@ if __name__ == "__main__":
     xhchat = XinghuoChat(appid, apikey, apisecret)
     xhchat.chat(contents)
     xhchat.chat_stream(contents)
-    
