@@ -14,7 +14,7 @@ cd AIApi
 python setup.py install
 ```
 4. 配置jupyter lab
-+ 方法1：在jupyter中使用`%load_ext xinghuo`加载
++ 方法1：在jupyter中使用`%load_ext xinghuo.xhmagic`加载
 + 方法2：把`mymagics.py`移动至目录/user/.ipython/profile_default/startup
 5. 使用
 + 一句话沟通

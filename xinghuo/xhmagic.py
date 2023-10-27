@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-10-26 13:39:12
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-27 11:46:02
+# @Last Modified time: 2023-10-27 17:28:14
 # @github: https://github.com/longfengpili
 
 import re
@@ -105,7 +105,7 @@ class XhChater(Magics):
             contents.dump(xhchat.appname)
 
 
-# 注册magic命令
+# 注册magic命令(如果使用mymagics.py, 则下边的函数不重要)
 def load_ipython_extension(ipython):
     ipython.register_magics(XhChater)
 
