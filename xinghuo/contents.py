@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-11 14:48:03
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-19 11:14:19
+# @Last Modified time: 2023-10-26 12:08:36
 # @github: https://github.com/longfengpili
 
 
@@ -72,6 +72,12 @@ class Contents:
         contents.append(content)
         self.contents = contents
         return self
+
+    @property
+    def last_content(self):
+        last_content = self.contents[-1]
+        last_content = last_content.content
+        return last_content
 
     @property
     def last_role(self):

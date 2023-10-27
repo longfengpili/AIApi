@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-20 14:10:49
+# @Last Modified time: 2023-10-27 10:23:14
 # @github: https://github.com/longfengpili
 
 
@@ -27,10 +27,11 @@ XINGHUOAPI = {
 
 class XinghuoChat(XingHuoAuth):
 
-    def __init__(self, appid: str, apikey: str, apisecret: str, apiver: str = 'v2'):
+    def __init__(self, appid: str, apikey: str, apisecret: str, apiver: str = 'v2', **kwargs: dict):
         self.appid = appid
         self.domain = XINGHUOAPI.get(f"api_{apiver}").get('domain')
         self.sparkurl = XINGHUOAPI.get(f"api_{apiver}").get('url')
+        self.kwargs = kwargs
         self.sid = ''
         self.answer = ''
         self.contents = Contents()
@@ -91,9 +92,10 @@ class XinghuoChat(XingHuoAuth):
 
         return sid, usage
 
-    def chat(self, contents: Contents, uid: str = '123'):
-        print(contents)
-        print("\n>>>>>>Answer:")
+    def chat(self, contents: Contents, uid: str = '123', is_show_content: bool = False):
+        if is_show_content:
+            print(contents)
+        # print("\n>>>>>>Answer:")
 
         websocket = self.websocket
         message = self.build_message(contents)
@@ -112,13 +114,13 @@ class XinghuoChat(XingHuoAuth):
 
         return sid, contents
 
-    def chat_stream(self, contents: Contents = None, uid: str = '123'):
+    def chat_stream(self, contents: Contents = None, uid: str = '123', is_show_content: bool = False):
         if not contents:
             contents = Contents()
 
         while True:
             if contents.last_role == 'user':
-                sid, contents = self.chat(contents, uid=uid)
+                sid, contents = self.chat(contents, uid=uid, is_show_content=is_show_content)
 
             query = input("\n>>>>>>Ask: ")
             if not query:
