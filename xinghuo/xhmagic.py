@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-10-26 13:39:12
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-27 11:14:36
+# @Last Modified time: 2023-10-27 11:46:02
 # @github: https://github.com/longfengpili
 
 import re
@@ -41,7 +41,7 @@ class XhChater(Magics):
             aiconf = AIConfig(ainame, aiid, aikey, aisecret)
             aiconf.dump()
 
-        xhchat = XinghuoChat(aiconf.appid, aiconf.appkey, aiconf.appsecret)
+        xhchat = XinghuoChat(ainame, aiconf.appid, aiconf.appkey, aiconf.appsecret)
         return xhchat
 
     def _concat_inputs(self, *inputs: tuple):
@@ -79,7 +79,6 @@ class XhChater(Magics):
 
         return '\n'.join(convert_code)
 
-    @magic_arguments()
     @line_magic
     def chat_single(self, line):
         xhchat = self.xhchat()
@@ -92,14 +91,18 @@ class XhChater(Magics):
 
     @magic_arguments()
     @argument('--verobse', '-v', action="store_true", help="Whether to show ask")
+    @argument('--save', '-s', action="store_true", help="Whether to save history")
     @cell_magic
     def chat(self, line, cell=None):
         args = parse_argstring(self.chat, line)
         is_show_content = True if args.verobse else False
+        is_save = True if args.save else False
         contents = self._concat_inputs(cell)
         print(f'>>>>>>Ask:{contents.last_content}\n')
         xhchat = self.xhchat()
-        xhchat.chat_stream(contents, is_show_content=is_show_content)
+        contents = xhchat.chat_stream(contents, is_show_content=is_show_content)
+        if is_save:
+            contents.dump(xhchat.appname)
 
 
 # 注册magic命令

@@ -2,10 +2,10 @@
 # @Author: longfengpili
 # @Date:   2023-09-11 14:48:03
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-26 12:08:36
+# @Last Modified time: 2023-10-27 11:52:03
 # @github: https://github.com/longfengpili
 
-
+from pathlib import Path
 import json
 
 
@@ -56,6 +56,7 @@ class Content:
 
 
 class Contents:
+    dumppath = Path(Path.home(), '.aiapi')
 
     def __init__(self, *contents: list[Content, ...]):
         self.contents = contents
@@ -96,13 +97,23 @@ class Contents:
         contents = [content.chatdata for content in self.contents]
         return contents
 
-    def dump(self, filename: str):
-        with open(filename, 'a', encoding='utf-8') as f:
-            f.write(self.data)
-
     @classmethod
     def load(cls, filename: str):
-        with open(filename, 'r', encoding='utf-8') as f:
+        dumpfile = Path(cls.dumppath, f'{filename}.log')
+        if not dumpfile.exists():
+            return
+
+        with dumpfile.open('r', encoding='utf-8') as f:
             lines = f.readlines()
             contents = [Content.load(line) for line in lines]
             return cls(*contents)
+
+    def dump(self, filename: str):
+        dumppath = self.dumppath
+        dumpfile = Path(self.dumppath, f'{filename}.log')
+
+        if not dumppath.exists():
+            dumppath.mkdir()
+
+        with dumpfile.open('a', encoding='utf-8') as f:
+            f.write(self.data)

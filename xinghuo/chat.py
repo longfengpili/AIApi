@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-27 10:23:14
+# @Last Modified time: 2023-10-27 11:54:12
 # @github: https://github.com/longfengpili
 
 
@@ -27,7 +27,8 @@ XINGHUOAPI = {
 
 class XinghuoChat(XingHuoAuth):
 
-    def __init__(self, appid: str, apikey: str, apisecret: str, apiver: str = 'v2', **kwargs: dict):
+    def __init__(self, appname: str, appid: str, apikey: str, apisecret: str, apiver: str = 'v2', **kwargs: dict):
+        self.appname = appname
         self.appid = appid
         self.domain = XINGHUOAPI.get(f"api_{apiver}").get('domain')
         self.sparkurl = XINGHUOAPI.get(f"api_{apiver}").get('url')
@@ -95,7 +96,7 @@ class XinghuoChat(XingHuoAuth):
     def chat(self, contents: Contents, uid: str = '123', is_show_content: bool = False):
         if is_show_content:
             print(contents)
-        # print("\n>>>>>>Answer:")
+        print(">>>>>>>>>>>>Answer:\n")
 
         websocket = self.websocket
         message = self.build_message(contents)
