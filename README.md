@@ -28,7 +28,7 @@ python setup.py install
 用pandas生成1个DataFrame
 ```
 
-## 定义
+## 注册自定义的魔术命令
 在您的代码中，您定义了两个函数来注册自定义的魔术命令。让我解释一下这两个函数的作用：
 
 1. **`load_ipython_extension(ipython)` 函数：**
@@ -123,3 +123,50 @@ pip install dist/your_extension-0.1.tar.gz
 这样，您的IPython扩展就被打包并安装到了系统中。安装完成后，您可以在IPython中使用 `%load_ext your_extension.your_magic_module` 来加载您的自定义魔术命令。
 
 请确保在`setup.py`中正确指定了您的项目信息和依赖项，以便在安装时获得正确的配置。另外，根据需要修改`setup.py`以满足您的项目需求。
+
+## python setup.py 介绍
+`python setup.py` 是一个常用的命令，用于构建、安装和分发Python包。它支持一系列参数，每个参数都有特定的含义和用途。以下是常见的 `setup.py` 支持的参数及其含义：
+
+1. **`sdist`**: 构建源代码分发包（Source Distribution）。这个命令会创建一个tarball（通常是 `.tar.gz` 格式），其中包含了源代码、`setup.py` 文件和其他必要文件。
+
+   ```bash
+   python setup.py sdist
+   ```
+
+2. **`bdist`**: 构建二进制分发包（Binary Distribution）。这个命令会创建一个二进制分发包，其中包含了已编译的Python模块。
+
+   ```bash
+   python setup.py bdist
+   ```
+
+3. **`bdist_wheel`**: 构建Wheel分发包，它是一种二进制分发格式，通常比sdist更高效。Wheel可以通过`pip`进行安装。
+
+   ```bash
+   python setup.py bdist_wheel
+   ```
+
+4. **`install`**: 安装包到系统中。这个命令会将包安装到Python的`site-packages`目录中。
+
+   ```bash
+   python setup.py install
+   ```
+
+5. **`develop`**: 安装包的开发版（development version）。这个命令会创建一个链接，指向包的源代码目录，从而允许您在源代码发生变化时立即看到变化，无需重新安装。
+
+   ```bash
+   python setup.py develop
+   ```
+
+6. **`test`**: 运行包的单元测试。这个命令会查找项目中的测试模块，并运行它们。
+
+   ```bash
+   python setup.py test
+   ```
+
+7. **`upload`**: 将包上传到Python包索引（PyPI）上，以便其他人可以通过`pip install`命令安装它。
+
+   ```bash
+   python setup.py upload
+   ```
+
+以上是常见的`setup.py`参数及其含义。确切的参数和用法可能会根据您的项目配置而有所不同，建议查阅相关文档或运行`python setup.py --help-commands`来获取关于特定版本的更详细信息。
