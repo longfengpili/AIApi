@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-11 18:21:36
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-30 10:17:59
+# @Last Modified time: 2023-10-30 19:36:10
 # @github: https://github.com/longfengpili
 
 
@@ -26,6 +26,12 @@ class TestModel:
         ms = Contents(self.m1, self.m2, self.m3)
         print(ms)
         print(ms.data)
+
+    def test_contents_index(self):
+        ms = Contents(self.m1, self.m2, self.m3)
+        print(ms[1])
+        print(ms[-1:])
+        print(ms[-2:])
 
     def test_dump(self):
         ms = Contents(self.m1, self.m2, self.m3)

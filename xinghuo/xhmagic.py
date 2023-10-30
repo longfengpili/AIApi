@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-10-26 13:39:12
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-30 11:34:54
+# @Last Modified time: 2023-10-30 19:37:46
 # @github: https://github.com/longfengpili
 
 import re
@@ -41,15 +41,8 @@ class XhChater(Magics):
             aiconf = AIConfig(ainame, aiid, aikey, aisecret)
             aiconf.dump()
 
-        xhchat = XinghuoChat(ainame, aiconf.appid, aiconf.appkey, aiconf.appsecret)
+        xhchat = XinghuoChat(aiconf.appname, aiconf.appid, aiconf.appkey, aiconf.appsecret)
         return xhchat
-
-    def _concat_inputs(self, *inputs: tuple):
-        inputs = [text.strip() for text in inputs if text.strip()]
-        content = '\n'.join(inputs)
-        content = Content(**{'role': 'user', 'content': content})
-        contents = Contents(content)
-        return contents
 
     def _convert_to_code(self, content: str):
         def convert_non_code(content: str, c_start: int, c_end: int = None):
@@ -59,7 +52,7 @@ class XhChater(Magics):
             return non_code
 
         all_code_spans = []
-        reg = r"`{3}([\w]*)\n([\S\s]+?)\n`{3}"
+        reg = r"`{3}([\w]+)\n([\S\s]+?)\n`{3}"
         for i in re.finditer(reg, content):
             all_code_spans.append(i.span(2))
 
@@ -80,14 +73,25 @@ class XhChater(Magics):
     @line_magic
     def chat_single(self, line):
         xhchat = self.xhchat()
-        contents = self._concat_inputs(line)
-        sid, contents = xhchat.chat(contents)
-        execution_id = self.shell.execution_count
-        code = self._convert_to_code(contents.last_content)
-        program_out = f"# Assistant Code for Cell [{execution_id}]:\n{code}"
-        self.shell.set_next_input(program_out)
+        contents = self.shell.user_ns.get('contents', Contents())
+        s_contents = contents[-2:]
+        sid, r_contents = xhchat.chat(line, s_contents, is_show_content=True)
+        # 传递给user_ns
+        contents.extend(r_contents[-2:])
+        self.shell.user_ns['contents'] = contents
+
+        # 输出结果
+        # execution_id = self.shell.execution_count
+        # code = self._convert_to_code(contents.last_content)
+        # program_out = f"# Assistant Code for Cell [{execution_id}]:\n{code}"
+        # print('>>>>>>>>>>>>Result:\n')
+        # self.shell.run_cell(program_out)
+
+        # input to shell cell
+        # self.shell.set_next_input(program_out)
 
     @magic_arguments()
+    @argument('--number', '-n', default=5, type=int, help="how many contents to ai")
     @argument('--verobse', '-v', action="store_true", help="Whether to show ask")
     @argument('--save', '-s', action="store_true", help="Whether to save history")
     @cell_magic
@@ -95,7 +99,7 @@ class XhChater(Magics):
         args = parse_argstring(self.chat, line)
         is_show_content = True if args.verobse else False
         is_save = True if args.save else False
-        contents = self._concat_inputs(cell)
+        contents = self._concat_contents('user', line)
         print(f'>>>>>>Ask:{contents.last_content}\n')
         xhchat = self.xhchat()
         contents = xhchat.chat_stream(contents, is_show_content=is_show_content)
