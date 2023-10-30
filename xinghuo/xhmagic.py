@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-10-26 13:39:12
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-27 17:28:14
+# @Last Modified time: 2023-10-30 11:31:56
 # @github: https://github.com/longfengpili
 
 import re
@@ -53,8 +53,8 @@ class XhChater(Magics):
 
     def _convert_to_code(self, content: str):
         def convert_non_code(content: str, c_start: int, c_end: int = None):
-            non_code = content[c_start:c_end] if c_end else content[c_start:]
-            non_code = [f'# {s}' for s in non_code.split('\n') if s.strip() and not s.startswith('```')]
+            non_code = content[c_start:c_end] if c_end is not None else content[c_start:]
+            non_code = [f'# {s.strip()}' for s in non_code.split('\n') if s.strip() and not s.startswith('```')]
             non_code = '\n'.join(non_code)
             return non_code
 
@@ -64,7 +64,7 @@ class XhChater(Magics):
             all_code_spans.append(i.span(2))
 
         if len(all_code_spans) == 0:
-            all_code_spans.append((0, len(content)))
+            all_code_spans.append((0, 0))
 
         c_pos = 0
         convert_code = []
@@ -77,7 +77,7 @@ class XhChater(Magics):
         last_non_code = convert_non_code(content, c_pos)
         convert_code.append(last_non_code)
 
-        return '\n'.join(convert_code)
+        return '\n'.join([code for code in convert_code if code])
 
     @line_magic
     def chat_single(self, line):

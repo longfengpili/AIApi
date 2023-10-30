@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-11 18:21:36
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-09-12 10:46:50
+# @Last Modified time: 2023-10-30 10:17:59
 # @github: https://github.com/longfengpili
 
 
@@ -34,4 +34,3 @@ class TestModel:
     def test_load(self):
         ms = Contents.load('./test.csv')
         print(ms)
-
