@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-27 11:54:12
+# @Last Modified time: 2023-10-30 18:46:17
 # @github: https://github.com/longfengpili
 
 
@@ -93,7 +93,12 @@ class XinghuoChat(XingHuoAuth):
 
         return sid, usage
 
-    def chat(self, contents: Contents, uid: str = '123', is_show_content: bool = False):
+    def chat(self, question: str = None, contents: Contents = None, uid: str = '123', is_show_content: bool = False):
+        if question:
+            question = Content(**{'role': 'user', 'content': question})
+            contents = contents if contents else Contents()
+            contents.append(question)
+
         if is_show_content:
             print(contents)
         print(">>>>>>>>>>>>Answer:\n")
@@ -121,7 +126,7 @@ class XinghuoChat(XingHuoAuth):
 
         while True:
             if contents.last_role == 'user':
-                sid, contents = self.chat(contents, uid=uid, is_show_content=is_show_content)
+                sid, contents = self.chat(contents=contents, uid=uid, is_show_content=is_show_content)
 
             query = input("\n>>>>>>Ask: ")
             if not query:
