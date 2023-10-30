@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-10-26 13:39:12
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-30 11:31:56
+# @Last Modified time: 2023-10-30 11:34:54
 # @github: https://github.com/longfengpili
 
 import re
@@ -63,21 +63,19 @@ class XhChater(Magics):
         for i in re.finditer(reg, content):
             all_code_spans.append(i.span(2))
 
-        if len(all_code_spans) == 0:
-            all_code_spans.append((0, 0))
-
         c_pos = 0
-        convert_code = []
-        for c_start, c_end in all_code_spans:
-            non_code = convert_non_code(content, c_pos, c_start)
-            code = content[c_start:c_end].strip()
-            convert_code.extend([non_code, code])
-            c_pos = c_end
+        convert_codes = []
+        if all_code_spans:
+            for c_start, c_end in all_code_spans:
+                non_code = convert_non_code(content, c_pos, c_start)
+                code = content[c_start:c_end].strip()
+                convert_codes.extend([non_code, code])
+                c_pos = c_end
 
         last_non_code = convert_non_code(content, c_pos)
-        convert_code.append(last_non_code)
+        convert_codes.append(last_non_code)
 
-        return '\n'.join([code for code in convert_code if code])
+        return '\n'.join([code for code in convert_codes if code])
 
     @line_magic
     def chat_single(self, line):
