@@ -2,11 +2,13 @@
 # @Author: longfengpili
 # @Date:   2023-09-11 14:48:03
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-30 19:35:56
+# @Last Modified time: 2023-10-31 11:26:19
 # @github: https://github.com/longfengpili
 
 from pathlib import Path
 import json
+
+from typing import Iterable, List, Any
 
 
 class Content:
@@ -59,7 +61,7 @@ class Contents:
     dumppath = Path(Path.home(), '.aiapi')
 
     def __init__(self, *contents: list[Content, ...]):
-        self.contents = contents
+        self.contents = list(contents)
 
     def __repr__(self):
         contents = [content._repr for content in self.contents]
@@ -68,28 +70,33 @@ class Contents:
         contents = '\n'.join(contents)
         return contents
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> Any:
         if isinstance(index, slice):
             start, stop, step = index.indices(len(self.contents))
-            contents = [self.contents[i] for i in range(start, stop, step)]
-        elif 0 <= index < len(self.contents):
-            contents = [self.contents[index]]
+            return Contents(*[self.contents[i] for i in range(start, stop, step)])
+        elif -len(self.contents) <= index < len(self.contents):
+            return Contents(self.contents[index])
         else:
             raise IndexError("Index out of range")
-        return Contents(*contents)
 
-    def append(self, content: Content):
-        contents = list(self.contents)
-        contents.append(content)
-        self.contents = contents
-        return self
+    def __setitem__(self, index: int, value: Any) -> None:
+        if -len(self.contents) <= index < len(self.contents):
+            self.contents[index] = value
+        else:
+            raise IndexError("Index out of range")
 
-    def extend(self, contents):
-        self_contents = list(self.contents)
-        contents = list(contents.contents)
-        self_contents.extend(contents)
-        self.contents = self_contents
-        return self
+    def append(self, content: Content) -> None:
+        self.contents.append(content)
+
+    def extend(self, iterable: Iterable[Content]) -> None:
+        self.contents.extend(iterable)
+
+    def __len__(self) -> int:
+        return len(self.contents)
+
+    def __iter__(self):
+        for content in self.contents:
+            yield content
 
     @property
     def last_content(self):

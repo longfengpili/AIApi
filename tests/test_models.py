@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-11 18:21:36
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-30 19:36:10
+# @Last Modified time: 2023-10-31 11:32:22
 # @github: https://github.com/longfengpili
 
 
@@ -33,10 +33,21 @@ class TestModel:
         print(ms[-1:])
         print(ms[-2:])
 
+    def test_contents_append(self):
+        ms = Contents(self.m1, self.m2, self.m3)
+        ms.append(self.m1)
+        print(ms)
+
+    def test_contents_extend(self):
+        ms = Contents(self.m1, self.m2, self.m3)
+        ms_new = Contents(self.m1, self.m2, self.m3)
+        ms.extend(ms_new)
+        print(ms)
+
     def test_dump(self):
         ms = Contents(self.m1, self.m2, self.m3)
-        ms.dump('./test.csv')
+        ms.dump('test')
 
     def test_load(self):
-        ms = Contents.load('./test.csv')
+        ms = Contents.load('test')
         print(ms)

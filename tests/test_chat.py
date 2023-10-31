@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-20 14:05:00
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-27 17:31:59
+# @Last Modified time: 2023-10-31 11:00:48
 # @github: https://github.com/longfengpili
 
 from xinghuo.config import AIConfig
@@ -14,18 +14,17 @@ class TestChat:
 
     def setup_method(self, method):
         aiconf = AIConfig.load('xinghuo')
-        self.content = Content(**{'role': 'user', 'content': '介绍下pandas'})
-        self.contents = Contents(self.content)
+        self.question = '介绍下pandas'
         self.xhchat = XinghuoChat(aiconf.appname, aiconf.appid, aiconf.appkey, aiconf.appsecret)
 
     def teardown_method(self, method):
         pass
 
     def test_chat(self):
-        sid, contents = self.xhchat.chat(self.contents)
+        sid, contents = self.xhchat.chat(self.question)
         print(sid)
         print(contents)
 
     def test_chat_stream(self):
-        contents = self.xhchat.chat_stream(self.contents)
+        contents = self.xhchat.chat_stream()
         print(contents)
