@@ -2,11 +2,12 @@
 # @Author: longfengpili
 # @Date:   2023-10-26 13:39:12
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-31 19:14:57
+# @Last Modified time: 2023-11-01 11:47:45
 # @github: https://github.com/longfengpili
 
 import re
 
+from IPython.core.error import UsageError
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.magic import (  # type: ignore
     Magics,
@@ -31,7 +32,7 @@ from traitlets.config.loader import Config
 
 @magics_class
 class XhChater(Magics):
-    ainame = Unicode('ainame', help='ainame').tag(config=True)
+    ainame = Unicode('ainame', help='current use ainame~').tag(config=True)
 
     def __init__(self, shell: InteractiveShell = None):
         super(XhChater, self).__init__(shell)
@@ -100,7 +101,7 @@ class XhChater(Magics):
     @magic_arguments()
     @argument('--verobse', '-v', action="store_true", help="Whether to show ask")
     @argument('--save', '-s', action="store_true", help="Whether to save history")
-    @argument('--input', action="store_true", help="Whether to save history")
+    @argument('--input', '-i', action="store_true", help="Whether to save history")
     @argument('--number', '-n', default=6, type=int, help="how many contents to ai")
     @line_cell_magic
     def chat(self, line, cell=None):
@@ -145,23 +146,30 @@ class XhChater(Magics):
           set the value of the parameter
         """
         line = line.strip().split('#')[0].strip()
-        all_class_configs = self.class_own_traits()
+        class_configs = self.class_own_traits()
 
         if not line or line.startswith('#'):
             doc = self.class_get_help()
             print(doc)
             return
-        elif line in all_class_configs.keys():
+        elif line in class_configs.keys():
             return getattr(self, line)
-        elif '=' in line:
-            param, value = line.split('=')
-            param, value = param.strip(), value.strip()
-            if param in all_class_configs.keys():
-                cfg = Config()
-                exec(f'cfg.{self.__class__.__name__}.{line}', self.shell.user_ns, locals())
-                self.update_config(cfg)
+        elif '=' in line and line.split('=')[0].strip() in class_configs.keys():
+            cfg = Config()
+            exec(f'cfg.{self.__class__.__name__}.{line}', self.shell.user_ns, locals())
+            self.update_config(cfg)
+        elif line in ('-h', '--help'):
+            print(
+                    "It supports the following usage:\n"
+                    "- %aiconfig\n  print all the configurable parameters and its current value\n"
+                    "- %aiconfig <parameter_name>\n  print the current value of the parameter\n"
+                    "- %aiconfig <parameter_name>=<value>\n  set the value of the parameter"
+                )
         else:
-            pass
+            raise UsageError(
+                    f"Invalid usage of the aiconfig command: {line}.\n"
+                    f"It only supports the following params: {class_configs.keys()}"
+                )
 
 
 # 注册magic命令(如果使用mymagics.py, 则下边的函数不重要)
