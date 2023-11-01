@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-10-26 13:39:12
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-11-01 11:47:45
+# @Last Modified time: 2023-11-01 19:12:11
 # @github: https://github.com/longfengpili
 
 import re
@@ -31,24 +31,31 @@ from traitlets.config.loader import Config
 
 
 @magics_class
-class XhChater(Magics):
-    ainame = Unicode('ainame', help='current use ainame~').tag(config=True)
+class XinghuoMagics(Magics):
+    appname = Unicode('xinghuo', 
+                      help=('current use appname, default: xinghuo ~')
+                      ).tag(config=True)
+    appid = Unicode(allow_none=True, 
+                    help=('current use appid')
+                    ).tag(config=True)
+    apikey = Unicode(allow_none=True, 
+                     help=('current use apikey')
+                     ).tag(config=True)
+    apisecret = Unicode(allow_none=True, 
+                        help=('current use apisecret')
+                        ).tag(config=True)
 
     def __init__(self, shell: InteractiveShell = None):
-        super(XhChater, self).__init__(shell)
-        self.ainame = 'xinghuo'
+        super(XinghuoMagics, self).__init__(shell)
 
     @property
     def xhchat(self):
-        aiconf = AIConfig.load(self.ainame)
-        if not aiconf:
-            aiid = input('please input your appid:')
-            aikey = input('please input your appikey:')
-            aisecret = input('please input your appsecret:')
-            aiconf = AIConfig(self.ainame, aiid, aikey, aisecret)
-            aiconf.dump()
+        if not all([self.appname, self.appid, self.apikey, self.apisecret]):
+            self.appid = input('please input your appid:')
+            self.apikey = input('please input your apikey:')
+            self.apisecret = input('please input your apisecret:')
 
-        xhchat = XinghuoChat(aiconf.appname, aiconf.appid, aiconf.appkey, aiconf.appsecret)
+        xhchat = XinghuoChat(self.appname, self.appid, self.apikey, self.apisecret)
         return xhchat
 
     def _convert_to_code(self, content: str):
@@ -81,7 +88,10 @@ class XhChater(Magics):
         xhchat = self.xhchat
         contents = self.shell.user_ns.get('CONTENTS', Contents())
         s_contents = contents[-number:]
-        sid, r_contents = xhchat.chat(answer, s_contents, is_show_content=is_show_content)
+        try:
+            sid, r_contents = xhchat.chat(answer, s_contents, is_show_content=is_show_content)
+        except Exception as e:
+            raise e
         # 新内容传递给user_ns
         contents.extend(r_contents[-2:])
         self.shell.user_ns['CONTENTS'] = contents
@@ -92,9 +102,9 @@ class XhChater(Magics):
         execution_id = self.shell.execution_count
         code = self._convert_to_code(contents.last_content)
         program_out = f"# Assistant Code for Cell [{execution_id}]:\n{code}"
-        print('>>>>>>>>>>>>Result:\n')
-        self.shell.run_cell(program_out)
-
+        # print('>>>>>>>>>>>>Result:\n')
+        # self.shell.run_cell(program_out)
+        
         # input to shell cell
         self.shell.set_next_input(program_out)
 
@@ -124,7 +134,7 @@ class XhChater(Magics):
 
         is_save = True if args.save else False
         if is_save:
-            contents.dump(self.ainame)
+            contents.dump(self.appname)
 
         isinput = args.input
         if isinput:
@@ -154,7 +164,9 @@ class XhChater(Magics):
             return
         elif line in class_configs.keys():
             return getattr(self, line)
-        elif '=' in line and line.split('=')[0].strip() in class_configs.keys():
+        elif '=' in line and line.split('=')[0].strip().lower() in class_configs.keys():
+            param, value = line.strip().split('=')
+            line = param.lower() + '=' + value
             cfg = Config()
             exec(f'cfg.{self.__class__.__name__}.{line}', self.shell.user_ns, locals())
             self.update_config(cfg)
@@ -174,7 +186,7 @@ class XhChater(Magics):
 
 # 注册magic命令(如果使用mymagics.py, 则下边的函数不重要)
 def load_ipython_extension(ipython):
-    ipython.register_magics(XhChater)
+    ipython.register_magics(XinghuoMagics)
 
 # #  注册魔术命令
 # get_ipython().register_magics(XhChater)

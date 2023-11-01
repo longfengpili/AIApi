@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-10-27 09:26:20
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-27 11:04:58
+# @Last Modified time: 2023-11-01 15:48:14
 # @github: https://github.com/longfengpili
 
 
@@ -14,11 +14,11 @@ class AIConfig:
 
     dumppath = Path(Path.home(), '.aiapi')
 
-    def __init__(self, appname, appid, appkey, appsecret, **kwargs):
+    def __init__(self, appname, appid, apikey, apisecret, **kwargs):
         self.appname = appname
         self.appid = appid
-        self.appkey = appkey
-        self.appsecret = appsecret
+        self.apikey = apikey
+        self.apisecret = apisecret
         self.kwargs = kwargs
 
     def __getattr__(self, item: str):
@@ -34,8 +34,8 @@ class AIConfig:
     def data(self):
         data = {'appname': self.appname, 
                 'appid': self.appid,
-                'appkey': self.appkey,
-                'appsecret': self.appsecret}
+                'apikey': self.apikey,
+                'apisecret': self.apisecret}
         data.update(self.kwargs)
         return data
 
