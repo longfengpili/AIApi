@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-08 14:29:34
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-31 11:04:44
+# @Last Modified time: 2023-11-01 11:03:17
 # @github: https://github.com/longfengpili
 
 
@@ -21,13 +21,17 @@ XINGHUOAPI = {
     'api_v2': {
         'url': 'wss://spark-api.xf-yun.com/v2.1/chat',
         'domain': 'generalv2'
+    },
+    'api_v3': {
+        'url': 'wss://spark-api.xf-yun.com/v3.1/chat',
+        'domain': 'generalv3'
     }
 }
 
 
 class XinghuoChat(XingHuoAuth):
 
-    def __init__(self, appname: str, appid: str, apikey: str, apisecret: str, apiver: str = 'v2', **kwargs: dict):
+    def __init__(self, appname: str, appid: str, apikey: str, apisecret: str, apiver: str = 'v3', **kwargs: dict):
         self.appname = appname
         self.appid = appid
         self.domain = XINGHUOAPI.get(f"api_{apiver}").get('domain')
