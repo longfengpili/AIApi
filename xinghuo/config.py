@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-10-27 09:26:20
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-11-02 11:46:27
+# @Last Modified time: 2023-11-02 11:48:19
 # @github: https://github.com/longfengpili
 
 
@@ -51,6 +51,7 @@ class AIConfig:
 
     @classmethod
     def load(cls, appname: str):
+        print(appname)
         dumpfile = Path(cls.dumppath, f'{appname}.json')
         if not dumpfile.exists():
             return
