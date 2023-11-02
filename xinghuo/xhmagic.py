@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-10-26 13:39:12
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-11-02 11:13:52
+# @Last Modified time: 2023-11-02 16:03:28
 # @github: https://github.com/longfengpili
 
 import re
@@ -161,8 +161,8 @@ class XinghuoMagics(Magics):
             doc = self.class_get_help()
             print(doc)
             return
-        elif line in class_configs.keys():
-            return getattr(self, line)
+        elif line.lower() in class_configs.keys():
+            return getattr(self, line.lower())
         elif '=' in line and line.split('=')[0].strip().lower() in class_configs.keys():
             param, value = line.strip().split('=')
             line = param.lower() + '=' + value
