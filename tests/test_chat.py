@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-09-20 14:05:00
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-10-31 11:00:48
+# @Last Modified time: 2023-11-02 11:15:34
 # @github: https://github.com/longfengpili
 
 from xinghuo.config import AIConfig

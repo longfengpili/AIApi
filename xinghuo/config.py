@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-10-27 09:26:20
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-11-01 15:48:14
+# @Last Modified time: 2023-11-02 11:46:27
 # @github: https://github.com/longfengpili
 
 
@@ -12,7 +12,7 @@ from pathlib import Path
 
 class AIConfig:
 
-    dumppath = Path(Path.home(), '.aiapi')
+    dumppath = Path(Path.home(), '.mysettings')
 
     def __init__(self, appname, appid, apikey, apisecret, **kwargs):
         self.appname = appname
@@ -63,12 +63,14 @@ class AIConfig:
     def dump(self):
         dumppath = self.dumppath
         dumpfile = Path(dumppath, f'{self.appname}.json')
+        print(dumpfile)
 
         if not dumppath.exists():
             dumppath.mkdir()
 
         with dumpfile.open('w', encoding='utf-8') as f:
             json.dump(self.data, f)
+        return dumpfile
 
     def get(self, item: str):
         try:

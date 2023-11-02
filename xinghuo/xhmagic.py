@@ -2,7 +2,7 @@
 # @Author: longfengpili
 # @Date:   2023-10-26 13:39:12
 # @Last Modified by:   longfengpili
-# @Last Modified time: 2023-11-01 19:12:11
+# @Last Modified time: 2023-11-02 11:13:52
 # @github: https://github.com/longfengpili
 
 import re
@@ -22,7 +22,6 @@ from IPython.core.magic_arguments import (  # type: ignore
     parse_argstring,
 )
 
-from .config import AIConfig
 from .chat import XinghuoChat
 from .contents import Content, Contents
 
@@ -104,7 +103,7 @@ class XinghuoMagics(Magics):
         program_out = f"# Assistant Code for Cell [{execution_id}]:\n{code}"
         # print('>>>>>>>>>>>>Result:\n')
         # self.shell.run_cell(program_out)
-        
+
         # input to shell cell
         self.shell.set_next_input(program_out)
 
